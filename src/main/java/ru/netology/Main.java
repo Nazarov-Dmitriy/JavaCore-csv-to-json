@@ -42,19 +42,23 @@ public class Main {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(new File(fileNameXml));
-        Node root = doc.getDocumentElement();
-        List<Employee> listXml = read(root);
+        NodeList nodeList = doc.getElementsByTagName("employee");
+        List<Employee> listXml = read(nodeList);
         return listXml;
     }
 
-    private static List<Employee> read(Node node) {
-        NodeList nodeList = node.getChildNodes();
+    private static List<Employee> read(NodeList nodeList) {
         List<Employee> list = new ArrayList<Employee>();
         for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node_ = nodeList.item(i);
-            if (Node.ELEMENT_NODE == node_.getNodeType()) {
-                String[] employ = node_.getTextContent().trim().replaceAll("\\s+", " ").split(" ");
-                list.add(new Employee(Long.parseLong(employ[0]), employ[1], employ[2], employ[3], Integer.parseInt(employ[4])));
+            Node node = nodeList.item(i);
+            if (Node.ELEMENT_NODE == node.getNodeType()) {
+                Element element = (Element) node;
+                Long id  = Long.parseLong(element.getElementsByTagName("id").item(0).getTextContent());
+                String firstName  = element.getElementsByTagName("firstName").item(0).getTextContent();
+                String lastName  = element.getElementsByTagName("lastName").item(0).getTextContent();
+                String country  = element.getElementsByTagName("country").item(0).getTextContent();
+                Integer age  = Integer.parseInt(element.getElementsByTagName("age").item(0).getTextContent());
+                list.add(new Employee(id ,firstName,lastName,country,age));
             }
         }
         return list;
